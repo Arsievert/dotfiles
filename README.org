@@ -1,0 +1,4 @@
+* Dotfiles
+- fish
+- kitty
+- btop

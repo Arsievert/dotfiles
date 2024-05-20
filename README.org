@@ -1,6 +1,6 @@
 * Dotfiles
-| Name  | Description                                                                                                | Git Repository Link                                                |
-|-------+------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------|
-| Fish  | Fish is a smart and user-friendly command line shell.                                                      | [GitHub - fish-shell](https://github.com/fish-shell/fish-shell)    |
-| Kitty | Kitty is a fast, feature-rich, GPU-based terminal emulator.                                                | [GitHub - kovidgoyal/kitty](https://github.com/kovidgoyal/kitty)   |
-| Btop  | Btop is a resource monitor that shows usage and stats for processor, memory, disks, network and processes. | [GitHub - aristocratos/btop](https://github.com/aristocratos/btop) |
+| Name  | Description                                                                                                | Repository                               |
+|-------+------------------------------------------------------------------------------------------------------------+------------------------------------------|
+| Fish  | Fish is a smart and user-friendly command line shell.                                                      | https://github.com/fish-shell/fish-shell |
+| Kitty | Kitty is a fast, feature-rich, GPU-based terminal emulator.                                                | https://github.com/kovidgoyal/kitty      |
+| Btop  | Btop is a resource monitor that shows usage and stats for processor, memory, disks, network and processes. | https://github.com/aristocratos/btop     |

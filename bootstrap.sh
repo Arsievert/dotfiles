@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Author:  Austin Sievert (arsievert1@gmail.com)
-# URL:     https://github.com/arsievert1/.zsh
+# URL:     https://github.com/arsievert1/dotfiles
 
 # License: MIT
 
@@ -10,10 +10,11 @@
 cd $HOME/dotfiles
 
 rsync --exclude ".git/" \
-      --exclude "brew" \
+      --exclude "Brewfile" \
       --exclude "LICENSE" \
       --exclude "README.org" \
       --exclude "bootstrap.sh" \
+      --exclude ".config/fish/fish_variables" \
       -avh --no-perms . $HOME
 
 if [ ! -d "$HOME/.emacs.d/" ]; then

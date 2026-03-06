@@ -1,0 +1,6 @@
+[user]
+	signingkey = 3AC32EDB14B8EFB2
+	name = Austin Sievert
+	email = Arsievert1@gmail.com
+[commit]
+	gpgsign = true

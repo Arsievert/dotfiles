@@ -1,6 +1,97 @@
 * Dotfiles
-| Name  | Description                                                                                                | Repository                               |
-|-------+------------------------------------------------------------------------------------------------------------+------------------------------------------|
-| Fish  | Fish is a smart and user-friendly command line shell.                                                      | https://github.com/fish-shell/fish-shell |
-| Kitty | Kitty is a fast, feature-rich, GPU-based terminal emulator.                                                | https://github.com/kovidgoyal/kitty      |
-| Btop  | Btop is a resource monitor that shows usage and stats for processor, memory, disks, network and processes. | https://github.com/aristocratos/btop     |
+| Name     | Description                                                                                                | Repository                               |
+|----------+------------------------------------------------------------------------------------------------------------+------------------------------------------|
+| Fish     | Fish is a smart and user-friendly command line shell.                                                      | https://github.com/fish-shell/fish-shell |
+| Kitty    | Kitty is a fast, feature-rich, GPU-based terminal emulator.                                                | https://github.com/kovidgoyal/kitty      |
+| Btop     | Btop is a resource monitor that shows usage and stats for processor, memory, disks, network and processes. | https://github.com/aristocratos/btop     |
+| Starship | Starship is a minimal, fast, and customizable prompt for any shell.                                        | https://github.com/starship/starship     |
+
+** Installation
+
+#+begin_src bash
+git clone https://github.com/arsievert/dotfiles.git ~/dotfiles
+cd ~/dotfiles
+./bootstrap.sh
+#+end_src
+
+To install Homebrew packages:
+
+#+begin_src bash
+brew bundle --file=~/dotfiles/Brewfile
+#+end_src
+
+** GPG Commit Signing Setup
+
+This dotfiles repo includes a =.gitconfig= with GPG commit signing enabled. Here's how to set it up on a new machine.
+
+*** 1. Install GPG
+
+#+begin_src bash
+brew install gnupg pinentry-mac
+#+end_src
+
+*** 2. Generate a new GPG key (if needed)
+
+#+begin_src bash
+gpg --full-generate-key
+#+end_src
+
+Choose:
+- RSA and RSA (default)
+- 4096 bits
+- Key does not expire (or set expiration as desired)
+- Your name and email (must match your git config)
+
+*** 3. Get your key ID
+
+#+begin_src bash
+gpg --list-secret-keys --keyid-format=long
+#+end_src
+
+Output looks like:
+
+#+begin_example
+sec   rsa4096/XXXXXXXXXXXXXXXX 2023-01-15 [SC]
+      ABCDEF1234567890ABCDEF1234567890ABCDEF12
+uid                 [ultimate] Your Name <your@email.com>
+ssb   rsa4096/1234567890ABCDEF 2023-01-15 [E]
+#+end_example
+
+The key ID is the part after =rsa4096/= (e.g., =XXXXXXXXXXXXXXXX=).
+
+*** 4. Configure git to use the key
+
+#+begin_src bash
+git config --global user.signingkey YOUR_KEY_ID
+git config --global commit.gpgsign true
+#+end_src
+
+Or edit =~/.gitconfig= directly:
+
+#+begin_src ini
+[user]
+    signingkey = YOUR_KEY_ID
+[commit]
+    gpgsign = true
+#+end_src
+
+*** 5. Export your public key to GitHub
+
+#+begin_src bash
+gpg --armor --export YOUR_KEY_ID | pbcopy
+#+end_src
+
+Then go to GitHub -> Settings -> SSH and GPG keys -> New GPG key, and paste.
+
+*** 6. Verify the setup
+
+#+begin_src bash
+# Test signing
+echo "test" | gpg --clearsign
+
+# Make a signed commit
+git commit --allow-empty -m "Test signed commit"
+
+# Verify the signature
+git log --show-signature -1
+#+end_src

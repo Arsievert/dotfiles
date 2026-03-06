@@ -1,13 +1,15 @@
 if status is-interactive
-    # Commands to run in interactive sessions can go here
+    # Setup GPG_TTY for signed commits.
+    set -x GPG_TTY (tty)
+    # Add brew to environment.
+    eval (/opt/homebrew/bin/brew shellenv | source)
+    # Initialize Starship prompt.
+    starship init fish | source
 end
 
-# Setup GPG_TTY for signed commits.
-set -x GPG_TTY (tty)
-# Add brew to environment.
-eval (/opt/homebrew/bin/brew shellenv | source)
+# Environment variables
+set -gx EDITOR /opt/homebrew/bin/emacs
+set -gx VISUAL $EDITOR
 
 # Add rust binaries to PATH
-if test -d $HOME/.cargo/bin
-    set -gx PATH $HOME/.cargo/bin $PATH
-end
+fish_add_path $HOME/.cargo/bin

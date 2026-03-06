@@ -27,7 +27,7 @@ This dotfiles repo includes a =.gitconfig= with GPG commit signing enabled. Here
 *** 1. Install GPG
 
 #+begin_src bash
-brew install gnupg pinentry-mac
+brew install gnupg
 #+end_src
 
 *** 2. Generate a new GPG key (if needed)

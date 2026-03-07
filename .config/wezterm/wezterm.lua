@@ -19,6 +19,8 @@ config.font_size = 16.0
 -- Cursor
 config.default_cursor_style = "BlinkingBlock"
 config.cursor_blink_rate = 500
+config.cursor_blink_ease_in = "Constant"
+config.cursor_blink_ease_out = "Constant"
 
 -- Mouse / URLs
 config.hyperlink_rules = wezterm.default_hyperlink_rules()

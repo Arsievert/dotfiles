@@ -15,6 +15,7 @@ end
 -- Font
 config.font = wezterm.font("Berkeley Mono")
 config.font_size = 16.0
+config.allow_square_glyphs_to_overflow_width = "Always"
 
 -- Cursor
 config.default_cursor_style = "BlinkingBlock"

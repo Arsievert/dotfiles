@@ -1,3 +1,5 @@
+set -g fish_greeting
+
 if status is-interactive
     # Setup GPG_TTY for signed commits.
     set -x GPG_TTY (tty)

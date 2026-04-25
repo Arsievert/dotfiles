@@ -3,6 +3,7 @@
 |----------+------------------------------------------------------------------------------------------------------------+------------------------------------------|
 | Fish     | Fish is a smart and user-friendly command line shell.                                                      | https://github.com/fish-shell/fish-shell |
 | Kitty    | Kitty is a fast, feature-rich, GPU-based terminal emulator.                                                | https://github.com/kovidgoyal/kitty      |
+| WezTerm  | WezTerm is a GPU-accelerated cross-platform terminal emulator and multiplexer.                             | https://github.com/wez/wezterm           |
 | Btop     | Btop is a resource monitor that shows usage and stats for processor, memory, disks, network and processes. | https://github.com/aristocratos/btop     |
 | Starship | Starship is a minimal, fast, and customizable prompt for any shell.                                        | https://github.com/starship/starship     |
 
@@ -11,10 +12,12 @@
 #+begin_src bash
 git clone https://github.com/arsievert/dotfiles.git ~/dotfiles
 cd ~/dotfiles
-./bootstrap.sh
+./install.sh
 #+end_src
 
-To install Homebrew packages:
+This installs Homebrew and Fish (if missing), sets Fish as the default shell, and syncs dotfiles to =$HOME=. Safe to re-run.
+
+To install all Homebrew packages:
 
 #+begin_src bash
 brew bundle --file=~/dotfiles/Brewfile

@@ -14,6 +14,7 @@ rsync --exclude ".git/" \
       --exclude "LICENSE" \
       --exclude "README.org" \
       --exclude "bootstrap.sh" \
+      --exclude "install.sh" \
       --exclude ".config/fish/fish_variables" \
       -avh --no-perms . $HOME
 

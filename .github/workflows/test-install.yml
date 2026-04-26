@@ -1,0 +1,35 @@
+name: Test Install
+
+on:
+  workflow_dispatch:
+
+jobs:
+  install:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout to ~/dotfiles
+        uses: actions/checkout@v6
+        with:
+          path: dotfiles
+
+      - name: Move checkout to $HOME/dotfiles
+        run: mv "$GITHUB_WORKSPACE/dotfiles" "$HOME/dotfiles"
+
+      - name: Run install script
+        run: bash "$HOME/dotfiles/install.sh"
+
+      - name: Verify fish is installed
+        run: command -v fish
+
+      - name: Verify starship is installed
+        run: command -v starship
+
+      - name: Verify fish is in /etc/shells
+        run: grep -q "$(command -v fish)" /etc/shells
+
+      - name: Verify dotfiles were synced
+        run: |
+          test -f "$HOME/.gitconfig"
+          test -f "$HOME/.config/fish/config.fish"
+          test -f "$HOME/.config/wezterm/wezterm.lua"
+          test -d "$HOME/.emacs.d"

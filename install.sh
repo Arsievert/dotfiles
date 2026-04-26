@@ -46,7 +46,7 @@ fi
 
 if [ "$SHELL" != "$FISH_PATH" ]; then
     echo "Setting Fish as default shell..."
-    chsh -s "$FISH_PATH"
+    sudo chsh -s "$FISH_PATH" "$USER"
 else
     echo "Fish is already the default shell."
 fi

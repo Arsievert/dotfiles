@@ -2,6 +2,7 @@
 
 local wezterm = require("wezterm")
 local utils = require("utils")
+local pane_tree = require("pane-tree")
 local config = wezterm.config_builder()
 
 -- Font
@@ -47,14 +48,14 @@ config.keys = {
 config.key_tables = {
     ctrl_x = {
         { key = "o", action = wezterm.action.ActivatePaneDirection("Next") },
-        { key = "2", action = wezterm.action.SplitVertical({ domain = "CurrentPaneDomain" }) },
-        { key = "3", action = wezterm.action.SplitHorizontal({ domain = "CurrentPaneDomain" }) },
+        { key = "2", action = wezterm.action_callback(pane_tree.wrap_split("vertical")) },
+        { key = "3", action = wezterm.action_callback(pane_tree.wrap_split("horizontal")) },
         { key = "0", action = wezterm.action.CloseCurrentPane({ confirm = true }) },
         { key = "1", action = wezterm.action.TogglePaneZoomState },
         { key = "b", action = wezterm.action.ShowTabNavigator },
         { key = "k", action = wezterm.action.CloseCurrentTab({ confirm = true }) },
         { key = "f", mods = "CTRL", action = wezterm.action.SpawnTab("CurrentPaneDomain") },
-        { key = "=", action = wezterm.action_callback(utils.balance_panes) },
+        { key = "=", action = wezterm.action_callback(pane_tree.balance) },
     },
 }
 
@@ -125,5 +126,7 @@ config.colors = {
         "#ebdbb2", -- bright white
     },
 }
+
+pane_tree.install()
 
 return config

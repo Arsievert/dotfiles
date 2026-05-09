@@ -22,19 +22,6 @@ local function collect_leaf_ids(node)
     return ids
 end
 
-local function count_leaves(node)
-    if not node then return 0 end
-    if node.type == "leaf" then return 1 end
-    return count_leaves(node.first) + count_leaves(node.second)
-end
-
-local function tree_depth(node)
-    if not node or node.type == "leaf" then return 0 end
-    local d1 = tree_depth(node.first)
-    local d2 = tree_depth(node.second)
-    return 1 + (d1 > d2 and d1 or d2)
-end
-
 local function remove_leaf(root, pane_id)
     if not root then return nil end
     if root.type == "leaf" then
@@ -82,10 +69,39 @@ local function collect_splits_bfs(root)
     return result
 end
 
+local function axis_weight(node, axis)
+    if node.type == "leaf" then return 1 end
+    if node.axis ~= axis then
+        return math.max(axis_weight(node.first, axis), axis_weight(node.second, axis))
+    end
+    return axis_weight(node.first, axis) + axis_weight(node.second, axis)
+end
+
 local function driver_for_split(node)
     if node.first.type == "leaf" then return node.first.pane_id end
     if node.second.type == "leaf" then return node.second.pane_id end
-    return nil
+    local function find_cross(n, axis)
+        if n.type == "leaf" then return n.pane_id end
+        if n.axis == axis then return nil end
+        return find_cross(n.first, axis) or find_cross(n.second, axis)
+    end
+    return find_cross(node.first, node.axis) or find_cross(node.second, node.axis)
+end
+
+local function subtree_extent(ids, pane_map, axis)
+    local min_pos = math.huge
+    local max_pos = 0
+    for _, id in ipairs(ids) do
+        local info = pane_map[id]
+        if info then
+            local pos = axis == "V" and info.left or info.top
+            local size = axis == "V" and info.width or info.height
+            if pos < min_pos then min_pos = pos end
+            if pos + size > max_pos then max_pos = pos + size end
+        end
+    end
+    if min_pos == math.huge then return 0 end
+    return max_pos - min_pos
 end
 
 local function synthesize_from_rects(panes)
@@ -236,10 +252,6 @@ function M.find_lca(tab_id, id1, id2)
     return find_lca_impl(M._trees[tab_id], id1, id2)
 end
 
-function M.driver_for_split(tab_id, split_node)
-    return driver_for_split(split_node)
-end
-
 function M.balance(window, pane)
     local tab = pane:tab()
     local tab_id = tab:tab_id()
@@ -248,13 +260,15 @@ function M.balance(window, pane)
     local root = M._trees[tab_id]
     if not root or root.type == "leaf" then return end
 
-    local max_iter = 2 * tree_depth(root) + 2
+    local num_splits = #collect_splits_bfs(root)
+    local max_iter = 3 * num_splits + 2
+
     for _ = 1, max_iter do
-        local panes = tab:panes_with_info()
-        if #panes < 2 then break end
+        local panes_info = tab:panes_with_info()
+        if #panes_info < 2 then break end
 
         local pane_map = {}
-        for _, p in ipairs(panes) do
+        for _, p in ipairs(panes_info) do
             pane_map[p.pane:pane_id()] = p
         end
 
@@ -267,33 +281,21 @@ function M.balance(window, pane)
 
             local first_ids = collect_leaf_ids(split.first)
             local second_ids = collect_leaf_ids(split.second)
-            local first_count = #first_ids
-            local second_count = #second_ids
 
-            local first_size = 0
-            local second_size = 0
-            for _, id in ipairs(first_ids) do
-                local info = pane_map[id]
-                if info then
-                    first_size = first_size + (split.axis == "V" and info.width or info.height)
-                end
-            end
-            for _, id in ipairs(second_ids) do
-                local info = pane_map[id]
-                if info then
-                    second_size = second_size + (split.axis == "V" and info.width or info.height)
-                end
-            end
+            local first_size = subtree_extent(first_ids, pane_map, split.axis)
+            local second_size = subtree_extent(second_ids, pane_map, split.axis)
 
             local total = first_size + second_size
             if total == 0 then goto continue end
-            local target_first = math.floor(total * first_count / (first_count + second_count))
+            local first_weight = axis_weight(split.first, split.axis)
+            local second_weight = axis_weight(split.second, split.axis)
+            local target_first = math.floor(total * first_weight / (first_weight + second_weight))
             local diff = first_size - target_first
 
             if math.abs(diff) <= 1 then goto continue end
 
             local driver_pane = nil
-            for _, p in ipairs(panes) do
+            for _, p in ipairs(panes_info) do
                 if p.pane:pane_id() == driver_id then
                     driver_pane = p.pane
                     break

@@ -15,6 +15,7 @@ set -gx VISUAL $EDITOR
 
 # Add rust binaries to PATH
 fish_add_path $HOME/.cargo/bin
+fish_add_path /opt/homebrew/opt/rustup/bin
 
 # Add local binaries to PATH
 fish_add_path $HOME/.local/bin/

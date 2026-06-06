@@ -1,6 +1,8 @@
 [user]
-	signingkey = 3AC32EDB14B8EFB2
+	signingkey = ~/.ssh/id_ed25519.pub
 	name = Austin Sievert
 	email = Arsievert1@gmail.com
 [commit]
 	gpgsign = true
+[gpg]
+	format = ssh

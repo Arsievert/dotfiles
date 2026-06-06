@@ -22,78 +22,54 @@ To install all Homebrew packages:
 brew bundle --file=~/dotfiles/Brewfile
 #+end_src
 
-** GPG Commit Signing Setup
+** SSH Commit Signing Setup
 
-This dotfiles repo includes a =.gitconfig= with GPG commit signing enabled. Here's how to set it up on a new machine.
+This dotfiles repo includes a =.gitconfig= configured to sign commits with an SSH key. Here's how to set it up on a new machine.
 
-*** 1. Install GPG
-
-#+begin_src bash
-brew install gnupg
-#+end_src
-
-*** 2. Generate a new GPG key (if needed)
+*** 1. Generate an SSH key (if needed)
 
 #+begin_src bash
-gpg --full-generate-key
+ssh-keygen -t ed25519 -C "your@email.com"
 #+end_src
 
-Choose:
-- RSA and RSA (default)
-- 4096 bits
-- Key does not expire (or set expiration as desired)
-- Your name and email (must match your git config)
+Accept the default path (=~/.ssh/id_ed25519=). The shipped =.gitconfig= points at this path; adjust =user.signingkey= if you use a different one.
 
-*** 3. Get your key ID
+*** 2. Confirm git is set up for SSH signing
 
-#+begin_src bash
-gpg --list-secret-keys --keyid-format=long
-#+end_src
-
-Output looks like:
-
-#+begin_example
-sec   rsa4096/XXXXXXXXXXXXXXXX 2023-01-15 [SC]
-      ABCDEF1234567890ABCDEF1234567890ABCDEF12
-uid                 [ultimate] Your Name <your@email.com>
-ssb   rsa4096/1234567890ABCDEF 2023-01-15 [E]
-#+end_example
-
-The key ID is the part after =rsa4096/= (e.g., =XXXXXXXXXXXXXXXX=).
-
-*** 4. Configure git to use the key
-
-#+begin_src bash
-git config --global user.signingkey YOUR_KEY_ID
-git config --global commit.gpgsign true
-#+end_src
-
-Or edit =~/.gitconfig= directly:
+The included =.gitconfig= already sets:
 
 #+begin_src ini
 [user]
-    signingkey = YOUR_KEY_ID
+    signingkey = ~/.ssh/id_ed25519.pub
 [commit]
     gpgsign = true
+[gpg]
+    format = ssh
 #+end_src
 
-*** 5. Export your public key to GitHub
+Note: =commit.gpgsign= is git's generic "sign every commit" toggle — it applies to SSH signing too once =gpg.format = ssh=.
+
+*** 3. Add the key to GitHub as a signing key
 
 #+begin_src bash
-gpg --armor --export YOUR_KEY_ID | pbcopy
+pbcopy < ~/.ssh/id_ed25519.pub
 #+end_src
 
-Then go to GitHub -> Settings -> SSH and GPG keys -> New GPG key, and paste.
+Then go to GitHub -> Settings -> SSH and GPG keys -> New SSH key, and set *Key type* to *Signing Key*. If you already use the same key for auth, add it a second time as a Signing Key — GitHub treats auth and signing entries separately.
 
-*** 6. Verify the setup
+*** 4. Verify the setup
 
 #+begin_src bash
-# Test signing
-echo "test" | gpg --clearsign
-
 # Make a signed commit
 git commit --allow-empty -m "Test signed commit"
 
 # Verify the signature
 git log --show-signature -1
+#+end_src
+
+For local verification (=git log --show-signature=) to report "Good signature", add your key to =~/.ssh/allowed_signers=:
+
+#+begin_src bash
+echo "your@email.com $(cat ~/.ssh/id_ed25519.pub)" >> ~/.ssh/allowed_signers
+git config --global gpg.ssh.allowedSignersFile ~/.ssh/allowed_signers
 #+end_src

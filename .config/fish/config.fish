@@ -1,8 +1,6 @@
 set -g fish_greeting
 
 if status is-interactive
-    # Setup GPG_TTY for signed commits.
-    set -x GPG_TTY (tty)
     # Add brew to environment.
     eval (/opt/homebrew/bin/brew shellenv | source)
     # Initialize Starship prompt.
